@@ -5,6 +5,9 @@ import (
 	"bytes"
 	"fmt"
 	"os"
+	"os/exec"
+	"runtime"
+	"strings"
 )
 
 //PrintArt prints the content of a file
@@ -27,4 +30,18 @@ func PrintDelim(delimChar string, length int) {
 	}
 
 	fmt.Println(delim.String())
+}
+
+func ClearScreen() {
+	currentOs := runtime.GOOS
+	if strings.Contains(strings.ToLower(currentOs), "windows") {
+		cmd := exec.Command("cmd", "/c", "cls") //Windows example, its tested
+		cmd.Stdout = os.Stdout
+		cmd.Run()
+	} else {
+		//handle Mac and Linux
+		cmd := exec.Command("clear") //Linux example, its tested
+		cmd.Stdout = os.Stdout
+		cmd.Run()
+	}
 }

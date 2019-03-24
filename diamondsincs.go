@@ -10,6 +10,7 @@ import (
 
 func main() {
 	//savekey := "Um9uYWxkIGlzIHRoZSBjb29sZXN0Lgo" // Add = to end to get full string, decode for fun message!
+	ClearScreen()
 	PrintArt("logo")
 	fmt.Println("")
 	fmt.Println("")
@@ -19,11 +20,12 @@ func main() {
 	fmt.Println("I'm sorry What is your name again?")
 	playerName, _ := reader.ReadString('\n')
 	playerName = strings.TrimSpace(playerName)
+	ClearScreen()
 	fmt.Println("Well then, welcome " + playerName + " I am sure you will do fine here.")
-	time.Sleep(3.5 * time.Second)
+	time.Sleep(3 * time.Second)
 	PrintDelim("=", 80)
 	fmt.Println("As the store manager it's your job to make sure that our customers are happy. \nIt is important to make sure that you stock the right merch and properly engage the consumers.")
-	time.Sleep(3.5 * time.Second)
+	time.Sleep(3 * time.Second)
 	PrintDelim("=", 80)
 	fmt.Println("What would you like to do first? I recommend that you check the books.")
 
