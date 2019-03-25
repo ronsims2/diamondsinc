@@ -8,6 +8,7 @@ import (
 	"os/exec"
 	"runtime"
 	"strings"
+	"unicode/utf8"
 )
 
 //PrintArt prints the content of a file
@@ -32,6 +33,7 @@ func PrintDelim(delimChar string, length int) {
 	fmt.Println(delim.String())
 }
 
+//ClearScreen clears the console
 func ClearScreen() {
 	currentOs := runtime.GOOS
 	if strings.Contains(strings.ToLower(currentOs), "windows") {
@@ -43,5 +45,30 @@ func ClearScreen() {
 		cmd := exec.Command("clear") //Linux example, its tested
 		cmd.Stdout = os.Stdout
 		cmd.Run()
+	}
+}
+
+//PrintArtWithText repalces tokens with 33 chars of text per line
+func PrintArtWithText(artName string, line1 string, line2 string) {
+	artFile, _ := os.Open(artName + ".art")
+	scanner := bufio.NewScanner(artFile)
+	token := "#################################"
+	line := line1
+
+	for scanner.Scan() {
+		text := scanner.Text()
+		var message string
+		if strings.Contains(text, token) {
+			textLength := utf8.RuneCountInString(line)
+			if textLength < 33 {
+				message = strings.Repeat(" ", 33-textLength) + line
+			}
+			message = strings.Replace(text, token, message, 1)
+			fmt.Println(message)
+
+			line = line2
+		} else {
+			fmt.Println(text)
+		}
 	}
 }
