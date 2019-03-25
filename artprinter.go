@@ -63,6 +63,7 @@ func PrintArtWithText(artName string, line1 string, line2 string) {
 			if textLength < 33 {
 				message = strings.Repeat(" ", 33-textLength) + line
 			}
+
 			message = strings.Replace(text, token, message, 1)
 			fmt.Println(message)
 
