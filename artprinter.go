@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
+	"math"
 	"os"
 	"os/exec"
 	"runtime"
@@ -61,7 +62,14 @@ func PrintArtWithText(artName string, line1 string, line2 string) {
 		if strings.Contains(text, token) {
 			textLength := utf8.RuneCountInString(line)
 			if textLength < 33 {
-				message = strings.Repeat(" ", 33-textLength) + line
+				pad := math.Floor(float64((33 - textLength) / 2))
+				message = strings.Repeat(" ", int(pad)) + line
+				message += strings.Repeat(" ", int(pad))
+
+				messageLength := utf8.RuneCountInString(message)
+				if messageLength < 33 {
+					message = message + strings.Repeat(" ", 33-messageLength)
+				}
 			}
 
 			message = strings.Replace(text, token, message, 1)
