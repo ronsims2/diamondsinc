@@ -4,9 +4,38 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 )
+
+//The money to buy stuff
+var cash = 5000
+var necklaceQty = 0
+var ringQty = 0
+var braceletQty = 0
+var watchQty = 0
+var earringQty = 0
+
+//pricelist
+var necklaceCost = 250
+var ringCost = 1000
+var braceletCost = 500
+var watchCost = 100
+var earringCost = 200
+
+var adCost = 2500
+var flashsaleCost = 1500
+
+var necklaceRetail = 0
+var ringRetail = 0
+var braceletRetail = 0
+var watchRetail = 0
+var earringRetail = 0
+
+var gameOver = false
+
+var options = [4]string{"a", "b", "c", "d"}
 
 func main() {
 	//savekey := "Um9uYWxkIGlzIHRoZSBjb29sZXN0Lgo" // Add = to end to get full string, decode for fun message!
@@ -30,22 +59,57 @@ func main() {
 	PrintDelim("=", 80)
 	fmt.Println("What would you like to do first? I recommend that you check the books.")
 
-	playRound()
+	//Start game loop
+	for !gameOver {
+		answer := showOptions()
+
+		if !validateAnswer(answer, options) {
+			fmt.Println("Invalid answer, try again.")
+		}
+	}
 
 }
 
-func playRound() string {
+func validateAnswer(answer string, answers [4]string) bool {
+	result := false
+	for _, v := range answers {
+		if answer == v {
+			result = true
+			break
+		}
+	}
+
+	return result
+}
+
+func showOptions() string {
 	reader := bufio.NewReader(os.Stdin)
 
 	fmt.Println("")
-	fmt.Println("A) Buy merch")
-	fmt.Println("B) Run a Flash sale")
+	fmt.Println("A) Buy Merch")
+	fmt.Println("B) Run a Flash Sale")
 	fmt.Println("C) Run an Ad campaign")
-	fmt.Println("E) Check the Books")
+	fmt.Println("D) Check the Books")
 	fmt.Println("")
 
 	answer, _ := reader.ReadString('\n')
+	answer = strings.Trim(strings.ToLower(answer), "\n")
 
 	return answer
+}
 
+func showBooks() {
+	PrintDelim("*", 80)
+	fmt.Println("Money: $" + strconv.Itoa(cash))
+	PrintDelim("-", 80)
+	fmt.Println("Necklaces QTY: " + strconv.Itoa(necklaceQty) + " | Cost: $" + strconv.Itoa(necklaceCost) + " | Retail: $" + strconv.Itoa(necklaceRetail))
+	PrintDelim("-", 80)
+	fmt.Println("Rings QTY: " + strconv.Itoa(ringQty) + " | Cost: $" + strconv.Itoa(ringCost) + " | Retail: $" + strconv.Itoa(ringRetail))
+	PrintDelim("-", 80)
+	fmt.Println("Bracelets QTY: " + strconv.Itoa(braceletQty) + " | Cost: $" + strconv.Itoa(braceletCost) + " | Retail: $" + strconv.Itoa(braceletRetail))
+	PrintDelim("-", 80)
+	fmt.Println("Watches QTY: " + strconv.Itoa(watchQty) + " | Cost: $" + strconv.Itoa(watchCost) + " | Retail: $" + strconv.Itoa(watchRetail))
+	PrintDelim("-", 80)
+	fmt.Println("Earring QTY: " + strconv.Itoa(earringQty) + " | Cost: $" + strconv.Itoa(earringCost) + " | Retail: $" + strconv.Itoa(earringRetail))
+	PrintDelim("*", 80)
 }
