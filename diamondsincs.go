@@ -34,8 +34,8 @@ var watchRetail = 0
 var earringRetail = 0
 
 var gameOver = false
-
-var options = [4]string{"a", "b", "c", "d"}
+var round = 0
+var options = []string{"a", "b", "c", "d"}
 
 func main() {
 	//savekey := "Um9uYWxkIGlzIHRoZSBjb29sZXN0Lgo" // Add = to end to get full string, decode for fun message!
@@ -61,16 +61,39 @@ func main() {
 
 	//Start game loop
 	for !gameOver {
+		//@todo Add chance element here, adjust costs
 		answer := showOptions()
 
 		if !validateAnswer(answer, options) {
 			fmt.Println("Invalid answer, try again.")
+			break
+		}
+
+		if answer == "a" {
+			for true {
+				answerA := showBuyMerch()
+
+				buyAnswers := append(options[0:3], "e")
+
+				if validateAnswer(answerA, buyAnswers) {
+
+					break
+				} else {
+					fmt.Println("Invalid answer, try again.")
+				}
+			}
+		}
+
+		if answer == "d" {
+			//This action shouldn't advancce round
+			showBooks()
+			continue
 		}
 	}
 
 }
 
-func validateAnswer(answer string, answers [4]string) bool {
+func validateAnswer(answer string, answers []string) bool {
 	result := false
 	for _, v := range answers {
 		if answer == v {
@@ -112,4 +135,23 @@ func showBooks() {
 	PrintDelim("-", 80)
 	fmt.Println("Earring QTY: " + strconv.Itoa(earringQty) + " | Cost: $" + strconv.Itoa(earringCost) + " | Retail: $" + strconv.Itoa(earringRetail))
 	PrintDelim("*", 80)
+}
+
+func showBuyMerch() string {
+	reader := bufio.NewReader(os.Stdin)
+
+	PrintDelim("*", 80)
+	fmt.Println("Money: $" + strconv.Itoa(cash))
+	PrintDelim("-", 80)
+	fmt.Println("A) Buy Necklaces | Cost: $" + strconv.Itoa(necklaceCost))
+	fmt.Println("B) Buy Rings: | Cost: $" + strconv.Itoa(ringCost))
+	fmt.Println("C) Buy Bracelets: | Cost: $" + strconv.Itoa(braceletCost))
+	fmt.Println("D) Buy Watches: | Cost: $" + strconv.Itoa(watchCost))
+	fmt.Println("E) Buy Earring : | Cost: $" + strconv.Itoa(earringCost))
+	PrintDelim("*", 80)
+
+	answer, _ := reader.ReadString('\n')
+	answer = strings.Trim(strings.ToLower(answer), "\n")
+
+	return answer
 }
