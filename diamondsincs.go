@@ -35,7 +35,7 @@ var earringRetail = 0
 
 var gameOver = false
 var round = 0
-var options = []string{"a", "b", "c", "d"}
+var options = []string{"a", "b", "c", "d", "e", "f", "g"}
 
 func main() {
 	//savekey := "Um9uYWxkIGlzIHRoZSBjb29sZXN0Lgo" // Add = to end to get full string, decode for fun message!
@@ -66,18 +66,27 @@ func main() {
 
 		if !validateAnswer(answer, options) {
 			fmt.Println("Invalid answer, try again.")
-			break
+			continue
 		}
 
 		if answer == "a" {
 			for true {
 				answerA := showBuyMerch()
 
-				buyAnswers := append(options[0:3], "e")
+				//buyAnswers := append(options[0:3], "e")
+				buyAnswers := options[0:4]
 
 				if validateAnswer(answerA, buyAnswers) {
+					for true {
+						purchaseResult := askQty(answerA)
+						if purchaseResult {
+							continue
+						} else {
+							fmt.Println("Error submiting order, please try again.")
+						}
+					}
 
-					break
+					continue
 				} else {
 					fmt.Println("Invalid answer, try again.")
 				}
@@ -88,6 +97,33 @@ func main() {
 			//This action shouldn't advancce round
 			showBooks()
 			continue
+		}
+
+		if answer == "e" {
+			for true {
+				setPriceAnswer := askSetPrices()
+
+				if setPriceAnswer {
+					continue
+				}
+			}
+		}
+
+		if answer == "f" {
+			playRound()
+
+			round++
+			if round == 3 {
+				gameOver = true
+			}
+
+			break
+		}
+
+		if answer == "g" {
+			fmt.Println("Sorry to see you go!")
+			ClearScreen()
+			os.Exit(0)
 		}
 	}
 
@@ -110,9 +146,12 @@ func showOptions() string {
 
 	fmt.Println("")
 	fmt.Println("A) Buy Merch")
-	fmt.Println("B) Run a Flash Sale")
+	fmt.Println("B) Run a Flash Sale") //show set prices with fee paid to run campaign
 	fmt.Println("C) Run an Ad campaign")
 	fmt.Println("D) Check the Books")
+	fmt.Println("E) Set prices")
+	fmt.Println("F) Play")
+	fmt.Println("G) Quit")
 	fmt.Println("")
 
 	answer, _ := reader.ReadString('\n')
@@ -154,4 +193,129 @@ func showBuyMerch() string {
 	answer = strings.Trim(strings.ToLower(answer), "\n")
 
 	return answer
+}
+
+func askQty(option string) bool {
+	reader := bufio.NewReader(os.Stdin)
+	options := map[string]string{
+		"A": "Necklaces | Cost: $" + strconv.Itoa(necklaceCost),
+		"B": "Buy Rings: | Cost: $" + strconv.Itoa(ringCost),
+		"C": "Buy Bracelets: | Cost: $" + strconv.Itoa(braceletCost),
+		"D": "Buy Watches: | Cost: $" + strconv.Itoa(watchCost),
+		"E": "Buy Earrings : | Cost: $" + strconv.Itoa(earringCost),
+	}
+
+	PrintDelim("*", 80)
+	fmt.Println("Money: $" + strconv.Itoa(cash))
+	PrintDelim("-", 80)
+	fmt.Println("How many " + options[option] + " do you want to buy?")
+	PrintDelim("*", 80)
+
+	answer, err := reader.ReadString('\n')
+	if err != nil {
+		return false
+	}
+
+	answer = strings.Trim(strings.ToLower(answer), "\n")
+
+	qty, qtyErr := strconv.ParseInt(answer, 10, 64)
+
+	if qtyErr != nil {
+		return false
+	}
+
+	itemCost := 0
+	switch option {
+	case "a":
+		itemCost = necklaceCost
+	case "b":
+		itemCost = ringCost
+	case "c":
+		itemCost = braceletCost
+	case "d":
+		itemCost = watchCost
+	case "e":
+		itemCost = earringCost
+	}
+
+	total := int(qty) * itemCost
+	fmt.Println("item cost: " + strconv.Itoa(itemCost))
+	fmt.Println("total: " + strconv.Itoa(total) + " | " + "QTY: " + strconv.Itoa(int(qty)))
+
+	if total <= cash {
+		cash = cash - total
+
+		switch option {
+		case "a":
+			necklaceQty += int(qty)
+		case "b":
+			ringQty += int(qty)
+		case "c":
+			braceletQty += int(qty)
+		case "d":
+			watchQty += int(qty)
+		case "e":
+			earringQty += int(qty)
+		}
+
+	} else {
+		return false
+	}
+
+	return true
+}
+
+func askSetPrices() bool {
+	reader := bufio.NewReader(os.Stdin)
+
+	PrintDelim("*", 80)
+	fmt.Println("A) Set necklaces price | Cost: $" + strconv.Itoa(necklaceCost) + " | Current price: $" + strconv.Itoa(necklaceRetail))
+	fmt.Println("B) Set rings price | Cost: $" + strconv.Itoa(ringCost) + " | Current price: $" + strconv.Itoa(ringRetail))
+	fmt.Println("C) Set bracelets price: | Cost: $" + strconv.Itoa(braceletCost) + " | Current price: $" + strconv.Itoa(braceletRetail))
+	fmt.Println("D) Set watches price: | Cost: $" + strconv.Itoa(watchCost) + " | Current price: $" + strconv.Itoa(watchRetail))
+	fmt.Println("E) Set Earrings price : | Cost: $" + strconv.Itoa(earringCost) + " | Current price: $" + strconv.Itoa(earringRetail))
+	PrintDelim("*", 80)
+
+	answer, err := reader.ReadString('\n')
+
+	if err != nil {
+		return false
+	}
+
+	if validateAnswer(answer, options[0:4]) {
+		return false
+	}
+
+	price, priceErr := reader.ReadString('\n')
+
+	if priceErr != nil {
+		return false
+	}
+
+	priceVal, priceValErr := strconv.ParseInt(price, 10, 64)
+
+	if priceValErr != nil {
+		return false
+	}
+
+	switch answer {
+	case "a":
+		necklaceRetail = int(priceVal)
+	case "b":
+		ringRetail = int(priceVal)
+	case "c":
+		braceletRetail = int(priceVal)
+	case "d":
+		watchRetail = int(priceVal)
+	case "e":
+		earringRetail = int(priceVal)
+	}
+
+	return true
+}
+
+func playRound() {
+	//roll dice
+	//pick chance
+	//calc results
 }
