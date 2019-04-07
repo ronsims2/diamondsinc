@@ -52,10 +52,10 @@ func main() {
 	playerName = strings.TrimSpace(playerName)
 	ClearScreen()
 	fmt.Println("Well then, welcome " + playerName + " I am sure you will do fine here.")
-	time.Sleep(3 * time.Second)
+	time.Sleep(1750 * time.Millisecond)
 	PrintDelim("=", 80)
 	fmt.Println("As the store manager it's your job to make sure that our customers are happy. \nIt is important to make sure that you stock the right merch and properly engage the consumers.")
-	time.Sleep(3 * time.Second)
+	time.Sleep(1750 * time.Millisecond)
 	PrintDelim("=", 80)
 	fmt.Println("What would you like to do first? I recommend that you check the books.")
 
@@ -80,14 +80,16 @@ func main() {
 					for true {
 						purchaseResult := askQty(answerA)
 						if purchaseResult {
-							continue
+							break
 						} else {
+							ClearScreen()
 							fmt.Println("Error submiting order, please try again.")
 						}
 					}
 
-					continue
+					break
 				} else {
+					ClearScreen()
 					fmt.Println("Invalid answer, try again.")
 				}
 			}
@@ -239,8 +241,8 @@ func askQty(option string) bool {
 	}
 
 	total := int(qty) * itemCost
-	fmt.Println("item cost: " + strconv.Itoa(itemCost))
-	fmt.Println("total: " + strconv.Itoa(total) + " | " + "QTY: " + strconv.Itoa(int(qty)))
+	//fmt.Println("item cost: " + strconv.Itoa(itemCost))
+	//fmt.Println("total paid: " + strconv.Itoa(total) + " | " + "QTY: " + strconv.Itoa(int(qty)))
 
 	if total <= cash {
 		cash = cash - total
@@ -318,4 +320,5 @@ func playRound() {
 	//roll dice
 	//pick chance
 	//calc results
+
 }
