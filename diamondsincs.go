@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"math/rand"
 	"os"
 	"strconv"
 	"strings"
@@ -314,6 +315,13 @@ func askSetPrices() bool {
 	}
 
 	return true
+}
+
+func rollDice(choices int) int {
+	rand.Seed(time.Now().UnixNano())
+	roll := rand.Intn(choices)
+
+	return roll
 }
 
 func playRound() {
