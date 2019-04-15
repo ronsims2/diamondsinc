@@ -8,18 +8,24 @@ import (
 type Circumstance struct {
 	influence   float64
 	description string
+	goal        int
 }
 
 //GenerateCircumstances is the generator for the circumstances
-func GenerateCircumstances() []Circumstance {
+func GenerateCircumstances(rounds int) []Circumstance {
 	chances := []Circumstance{}
 
-	for i := 0; i < 100; i++ {
+	for i := 0; i < rounds; i++ {
 		rand.Seed(int64(i))
-		flip := rand.Intn(100)
+		flip := rand.Intn(round)
+		goal = rand.Intn(1000)
 
 		infl := rand.Float64() + 0.7
 		desc := "Pretty good sales today."
+
+		if infl < 1 {
+			infl = 1
+		}
 
 		if flip%4 == 0 {
 			infl = infl * -1

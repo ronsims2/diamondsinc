@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"math"
 	"math/rand"
 	"os"
 	"strconv"
@@ -40,12 +41,15 @@ var options = []string{"a", "b", "c", "d", "e", "f", "g"}
 var circumstances []Circumstance
 var showIntructions = false
 
+var adBought = false
+var campaignRan = false
+
 func main() {
 	//savekey := "Um9uYWxkIGlzIHRoZSBjb29sZXN0Lgo" // Add = to end to get full string, decode for fun message!
 	ClearScreen()
 
 	//Generate circumstances
-	circumstances = GenerateCircumstances()
+	circumstances = GenerateCircumstances(10)
 
 	for i := 0; i < len(circumstances); i++ {
 		fmt.Println(circumstances[i])
@@ -104,6 +108,18 @@ func main() {
 					fmt.Println("Invalid answer, try again.")
 				}
 			}
+		}
+
+		if answer == "b" {
+			//buy ads
+			if cash <= adCost {
+				cash -= adCost
+				adBought = true
+			}
+		}
+
+		if answer == "c" {
+			//start campaign
 		}
 
 		if answer == "d" {
@@ -332,16 +348,94 @@ func askSetPrices() bool {
 	return true
 }
 
-func rollDice(choices int) int {
+func rollDice(count int) int {
 	rand.Seed(time.Now().UnixNano())
-	roll := rand.Intn(choices)
+	roll := rand.Intn(count)
 
 	return roll
 }
 
 func playRound() {
 	result := rollDice(len(circumstances))
-	fmt.Println(result)
+	buy(result)
+	adBought = false
+	campaignRan = false
 	ClearScreen()
 
+}
+
+func buy(diceRoll int) {
+	circumstance := circumstances[diceRoll]
+	boost := 0.0
+
+	if adBought {
+		boost = 0.25
+	}
+
+	if campaignRan {
+		boost = 0.33
+	}
+
+	influence := circumstance.influence + boost
+	shoppersMoney := int64(math.RoundToEven(float64(circumstance.goal) * influence))
+	lowestPrice := checkMinPrice()
+
+	for shoppersMoney > lowestPrice {
+		// var necklaceCost = 250
+		// var ringCost = 1000
+		// var braceletCost = 500
+		// var watchCost = 100
+		// var earringCost = 200
+		if int64(necklaceCost) <= shoppersMoney && necklaceQty > 0 {
+			necklaceQty--
+			shoppersMoney -= int64(necklaceCost)
+			cash += necklaceCost
+		}
+
+		if int64(ringCost) <= shoppersMoney && ringQty > 0 {
+			ringQty--
+			shoppersMoney -= int64(ringCost)
+			cash += ringCost
+		}
+
+		if int64(braceletCost) <= shoppersMoney && braceletQty > 0 {
+			braceletQty--
+			shoppersMoney -= int64(braceletCost)
+			cash += braceletCost
+		}
+
+		if int64(watchCost) <= shoppersMoney && watchQty > 0 {
+			watchQty--
+			shoppersMoney -= int64(watchCost)
+			cash += watchCost
+		}
+
+		if int64(earringCost) <= shoppersMoney && earringQty > 0 {
+			earringQty--
+			shoppersMoney -= int64(earringCost)
+			cash += earringCost
+		}
+	}
+}
+
+func checkMinPrice() int64 {
+	lowest := necklaceCost
+
+	if ringCost < lowest {
+		lowest = ringCost
+	}
+
+	if braceletCost < lowest {
+		lowest = braceletCost
+	}
+
+	if watchCost < lowest {
+		lowest = watchCost
+	}
+
+	if earringCost < lowest {
+		lowest = earringCost
+	}
+
+	return int64(lowest)
 }
