@@ -37,10 +37,20 @@ var earringRetail = 0
 var gameOver = false
 var round = 0
 var options = []string{"a", "b", "c", "d", "e", "f", "g"}
+var circumstances []Circumstance
+var showIntructions = false
 
 func main() {
 	//savekey := "Um9uYWxkIGlzIHRoZSBjb29sZXN0Lgo" // Add = to end to get full string, decode for fun message!
 	ClearScreen()
+
+	//Generate circumstances
+	circumstances = GenerateCircumstances()
+
+	for i := 0; i < len(circumstances); i++ {
+		fmt.Println(circumstances[i])
+	}
+
 	PrintArt("logo")
 	fmt.Println("")
 	fmt.Println("")
@@ -63,8 +73,8 @@ func main() {
 	//Start game loop
 	for !gameOver {
 		//@todo Add chance element here, adjust costs
-		answer := showOptions()
-
+		answer := showOptions(showIntructions)
+		showIntructions = true
 		if !validateAnswer(answer, options) {
 			fmt.Println("Invalid answer, try again.")
 			continue
@@ -144,8 +154,13 @@ func validateAnswer(answer string, answers []string) bool {
 	return result
 }
 
-func showOptions() string {
+func showOptions(showIntruction bool) string {
 	reader := bufio.NewReader(os.Stdin)
+
+	if showIntruction {
+		PrintDelim("=", 80)
+		fmt.Println("What would you like to do next?")
+	}
 
 	fmt.Println("")
 	fmt.Println("A) Buy Merch")
@@ -325,8 +340,8 @@ func rollDice(choices int) int {
 }
 
 func playRound() {
-	//roll dice
-	//pick chance
-	//calc results
+	result := rollDice(len(circumstances))
+	fmt.Println(result)
+	ClearScreen()
 
 }
