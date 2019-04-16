@@ -112,14 +112,28 @@ func main() {
 
 		if answer == "b" {
 			//buy ads
-			if cash <= adCost {
+			if cash >= adCost && !adBought {
 				cash -= adCost
 				adBought = true
+				PrintDelim("*", 80)
+				fmt.Println("Ads are running everywhere now!")
+			} else {
+				PrintDelim("*", 80)
+				fmt.Println("You cannot purchase another ad right now.")
 			}
 		}
 
 		if answer == "c" {
 			//start campaign
+			if cash >= flashsaleCost && !campaignRan {
+				cash -= flashsaleCost
+				campaignRan = true
+				PrintDelim("*", 80)
+				fmt.Println("Flash sale scheduled!")
+			} else {
+				PrintDelim("*", 80)
+				fmt.Println("You cannot run another flash sale right now.")
+			}
 		}
 
 		if answer == "d" {
@@ -379,43 +393,52 @@ func buy(diceRoll int) {
 	influence := circumstance.influence + boost
 	shoppersMoney := int64(math.RoundToEven(float64(circumstance.goal) * influence))
 	lowestPrice := checkMinPrice()
+	dailySales := 0
 
 	for shoppersMoney > lowestPrice {
-		// var necklaceCost = 250
-		// var ringCost = 1000
-		// var braceletCost = 500
-		// var watchCost = 100
-		// var earringCost = 200
 		if int64(necklaceCost) <= shoppersMoney && necklaceQty > 0 {
 			necklaceQty--
 			shoppersMoney -= int64(necklaceCost)
-			cash += necklaceCost
+			dailySales += necklaceCost
 		}
 
 		if int64(ringCost) <= shoppersMoney && ringQty > 0 {
 			ringQty--
 			shoppersMoney -= int64(ringCost)
-			cash += ringCost
+			dailySales += ringCost
 		}
 
 		if int64(braceletCost) <= shoppersMoney && braceletQty > 0 {
 			braceletQty--
 			shoppersMoney -= int64(braceletCost)
-			cash += braceletCost
+			dailySales += braceletCost
 		}
 
 		if int64(watchCost) <= shoppersMoney && watchQty > 0 {
 			watchQty--
 			shoppersMoney -= int64(watchCost)
-			cash += watchCost
+			dailySales += watchCost
 		}
 
 		if int64(earringCost) <= shoppersMoney && earringQty > 0 {
 			earringQty--
 			shoppersMoney -= int64(earringCost)
-			cash += earringCost
+			dailySales += earringCost
 		}
 	}
+	cash += dailySales
+	desc := "Sales could be better."
+
+	if shoppersMoney > int64(circumstance.goal) {
+		desc = "Sales were pretty good today."
+	}
+
+	if adBought || campaignRan {
+		desc += " What every you are doing is working, keep it up!"
+	}
+
+	ClearScreen()
+	PrintArtWithText("manager", desc, "We made $"+string(dailySales)+" today.")
 }
 
 func checkMinPrice() int64 {
