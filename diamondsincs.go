@@ -140,10 +140,11 @@ func main() {
 
 		if answer == "e" {
 			for true {
+				ClearScreen()
 				setPriceAnswer := askSetPrices()
 
 				if setPriceAnswer {
-					continue
+					break
 				}
 			}
 		}
@@ -345,16 +346,23 @@ func askSetPrices() bool {
 		return false
 	}
 
-	if validateAnswer(answer, options[0:4]) {
+	if !validateAnswer(answer, options[0:4]) {
+		fmt.Println("Incorrect answer, please try again.")
+		time.Sleep(2000 * time.Millisecond)
 		return false
 	}
 
 	price, priceErr := reader.ReadString('\n')
 
 	if priceErr != nil {
+		fmt.Println("Invaild price, please try again.")
+		time.Sleep(2000 * time.Millisecond)
 		return false
 	}
 
+	PrintDelim("*", 80)
+	fmt.Println("Enter a price")
+	PrintDelim("*", 80)
 	priceVal, priceValErr := strconv.ParseInt(price, 10, 64)
 
 	if priceValErr != nil {
