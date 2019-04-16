@@ -341,6 +341,7 @@ func askSetPrices() bool {
 	PrintDelim("*", 80)
 
 	answer, err := reader.ReadString('\n')
+	answer = strings.Trim(strings.ToLower(answer), "\n")
 
 	if err != nil {
 		return false
@@ -352,7 +353,11 @@ func askSetPrices() bool {
 		return false
 	}
 
+	PrintDelim("*", 80)
+	fmt.Println("Enter a price")
+	PrintDelim("*", 80)
 	price, priceErr := reader.ReadString('\n')
+	price = strings.Trim(strings.ToLower(price), "\n")
 
 	if priceErr != nil {
 		fmt.Println("Invaild price, please try again.")
@@ -360,9 +365,6 @@ func askSetPrices() bool {
 		return false
 	}
 
-	PrintDelim("*", 80)
-	fmt.Println("Enter a price")
-	PrintDelim("*", 80)
 	priceVal, priceValErr := strconv.ParseInt(price, 10, 64)
 
 	if priceValErr != nil {
