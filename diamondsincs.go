@@ -51,10 +51,6 @@ func main() {
 	//Generate circumstances
 	circumstances = GenerateCircumstances(10)
 
-	for i := 0; i < len(circumstances); i++ {
-		fmt.Println(circumstances[i])
-	}
-
 	PrintArt("logo")
 	fmt.Println("")
 	fmt.Println("")
@@ -111,19 +107,6 @@ func main() {
 		}
 
 		if answer == "b" {
-			//buy ads
-			if cash >= adCost && !adBought {
-				cash -= adCost
-				adBought = true
-				PrintDelim("*", 80)
-				fmt.Println("Ads are running everywhere now!")
-			} else {
-				PrintDelim("*", 80)
-				fmt.Println("You cannot purchase another ad right now.")
-			}
-		}
-
-		if answer == "c" {
 			//start campaign
 			if cash >= flashsaleCost && !campaignRan {
 				cash -= flashsaleCost
@@ -132,7 +115,20 @@ func main() {
 				fmt.Println("Flash sale scheduled!")
 			} else {
 				PrintDelim("*", 80)
-				fmt.Println("You cannot run another flash sale right now.")
+				fmt.Println("You cannot run a flash sale right now.")
+			}
+		}
+
+		if answer == "c" {
+			//buy ads
+			if cash >= adCost && !adBought {
+				cash -= adCost
+				adBought = true
+				PrintDelim("*", 80)
+				fmt.Println("Ads are running everywhere now!")
+			} else {
+				PrintDelim("*", 80)
+				fmt.Println("You cannot purchase an ad right now.")
 			}
 		}
 
@@ -154,13 +150,29 @@ func main() {
 
 		if answer == "f" {
 			playRound()
-
-			round++
-			if round == 3 {
+			if !checkStats() {
 				gameOver = true
+				ClearScreen()
+				PrintArtWithText("manager", "Things aren't working out...", "I gotta' let you go...")
+				PrintArt("fin")
+				PrintDelim("*", 80)
+				fmt.Println("I guess I didn't survie the 2019 Quarte Quell...may the odds ever be in YOUR favor!")
+				PrintDelim("*", 80)
+				break
 			}
+			fmt.Println("Round: " + strconv.Itoa(round+1))
+			round++
+			if round == len(circumstances) {
+				gameOver = true
+				ClearScreen()
+				PrintArt("fin")
+				PrintDelim("*", 80)
+				fmt.Println("I guess I didn't survie the 2019 Quarte Quell...may the odds ever be in YOUR favor!")
+				PrintDelim("*", 80)
+				break
 
-			break
+			}
+			continue
 		}
 
 		if answer == "g" {
@@ -209,6 +221,7 @@ func showOptions(showIntruction bool) string {
 }
 
 func showBooks() {
+	ClearScreen()
 	PrintDelim("*", 80)
 	fmt.Println("Money: $" + strconv.Itoa(cash))
 	PrintDelim("-", 80)
@@ -222,6 +235,8 @@ func showBooks() {
 	PrintDelim("-", 80)
 	fmt.Println("Earring QTY: " + strconv.Itoa(earringQty) + " | Cost: $" + strconv.Itoa(earringCost) + " | Retail: $" + strconv.Itoa(earringRetail))
 	PrintDelim("*", 80)
+
+	time.Sleep(300 * time.Millisecond)
 }
 
 func showBuyMerch() string {
@@ -372,9 +387,11 @@ func rollDice(count int) int {
 func playRound() {
 	result := rollDice(len(circumstances))
 	buy(result)
+	time.Sleep(5000 * time.Millisecond)
 	adBought = false
 	campaignRan = false
 	ClearScreen()
+	time.Sleep(300 * time.Millisecond)
 
 }
 
@@ -430,15 +447,15 @@ func buy(diceRoll int) {
 	desc := "Sales could be better."
 
 	if shoppersMoney > int64(circumstance.goal) {
-		desc = "Sales were pretty good today."
-	}
+		desc = "We made our numbers."
 
-	if adBought || campaignRan {
-		desc += " What every you are doing is working, keep it up!"
+		if adBought || campaignRan {
+			desc += " Good Job!"
+		}
 	}
 
 	ClearScreen()
-	PrintArtWithText("manager", desc, "We made $"+string(dailySales)+" today.")
+	PrintArtWithText("manager", desc, "We made $"+strconv.Itoa(dailySales)+" today.")
 }
 
 func checkMinPrice() int64 {
@@ -460,5 +477,33 @@ func checkMinPrice() int64 {
 		lowest = earringCost
 	}
 
+	fmt.Println("Low func :" + string(lowest))
 	return int64(lowest)
+}
+
+func checkStats() bool {
+	count := 0
+	if necklaceQty == 0 {
+		count++
+	}
+
+	if ringQty == 0 {
+		count++
+	}
+	if braceletQty == 0 {
+		count++
+	}
+	if watchQty == 0 {
+		count++
+	}
+
+	if earringQty == 0 {
+		count++
+	}
+
+	if count == 5 && int64(cash) < checkMinPrice() {
+		return false
+	} else {
+		return true
+	}
 }

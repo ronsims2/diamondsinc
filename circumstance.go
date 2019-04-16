@@ -16,7 +16,7 @@ func GenerateCircumstances(rounds int) []Circumstance {
 
 	for i := 0; i < rounds; i++ {
 		rand.Seed(int64(i))
-		flip := rand.Intn(round)
+		flip := rand.Intn(rounds)
 		goal := rand.Intn(1000)
 
 		infl := rand.Float64() + 0.7
